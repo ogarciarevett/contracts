@@ -2,6 +2,7 @@ import type { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox-viem';
 import '@nomicfoundation/hardhat-viem';
 import { ChainId, NetworkName, rpcUrls } from './constants/networks';
+import 'dotenv/config';
 
 const { PRIVATE_KEY } = process.env;
 if (!PRIVATE_KEY) {
