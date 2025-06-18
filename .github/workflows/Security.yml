@@ -1,4 +1,4 @@
-name: Smart Contract CI
+name: Security Analysis
 
 on:
     - push
@@ -7,7 +7,7 @@ env:
     PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
 jobs:
-    tests:
+    security:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -40,11 +40,5 @@ jobs:
             - name: Install dependencies
               run: pnpm install
 
-            - name: Run Linter
-              run: pnpm run lint
-
-            - name: Run Solhint
-              run: pnpm run solhint
-
-            - name: Run Hardhat tests
-              run: pnpm test:ci
+            - name: Run Slither
+              run: pnpm run analysis
