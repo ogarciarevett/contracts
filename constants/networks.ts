@@ -26,16 +26,6 @@ export enum NetworkName {
     Hardhat = 'hardhat',
 }
 
-export enum NetworkConfigFile {
-    DEFAULT = 'hardhat.config.ts',
-    Localhost = 'hardhat.config.ts',
-    Ethereum = 'hardhat.config.ts',
-    Sepolia = 'hardhat.config.ts',
-    Sei = 'sei.config.ts',
-    SeiTestnet = 'sei.config.ts',
-    Hardhat = 'hardhat.config.ts',
-}
-
 export enum Currency {
     Localhost = 'ETH',
     Ethereum = 'ETH',

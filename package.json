@@ -12,7 +12,8 @@
         "solhint": "solhint ./contracts/**/*.sol",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "compile": "hardhat compile"
+        "compile": "hardhat compile",
+        "coverage": "SOLIDITY_COVERAGE=true hardhat coverage"
     },
     "keywords": [],
     "author": "",

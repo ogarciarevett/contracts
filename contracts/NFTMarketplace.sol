@@ -3,6 +3,8 @@ pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 
 error NotOwner();
 error NotListed(address nftAddress, uint256 tokenId);
@@ -17,11 +19,15 @@ error NotSeller(address sender, address nftAddress, uint256 tokenId);
 error NoFeesToWithdraw();
 
 /**
- * @title NFTMarketplace
- * @author 0xmar
+ * @title NFTMarketplace - ERC721
+ * @author 0xmar(@ogarciarevett)
  * @notice A basic NFT marketplace to list, buy, and cancel ERC721 token sales.
  */
-contract NFTMarketplace is ReentrancyGuard {
+contract NFTMarketplace is ReentrancyGuard, AccessControl, Pausable {
+    bytes32 public constant FEE_MANAGER_ROLE = keccak256("FEE_MANAGER_ROLE");
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant WITHDRAWER_ROLE = keccak256("WITHDRAWER_ROLE");
+
     /**
      * @notice Represents a listed NFT, including its price and seller.
      * @param seller The address of the user who listed the NFT.
@@ -37,9 +43,6 @@ contract NFTMarketplace is ReentrancyGuard {
 
     /// @notice Maps from an address to the amount of fees collected for them.
     mapping(address => uint256) public marketplaceFees;
-
-    /// @notice The owner of the marketplace, who can collect fees.
-    address public owner;
 
     /// @notice The percentage of each sale that goes to the marketplace owner.
     uint256 public feePercentage;
@@ -73,12 +76,6 @@ contract NFTMarketplace is ReentrancyGuard {
     /// @dev Emitted when the owner withdraws collected fees.
     event FeeWithdrawn(address indexed owner, uint256 amount);
 
-    /// @dev Throws if called by any account other than the owner.
-    modifier onlyOwner() {
-        if (msg.sender != owner) revert NotOwner();
-        _;
-    }
-
     /// @dev Throws if the NFT is not listed for sale.
     modifier isListed(address nftAddress, uint256 tokenId) {
         if (listings[nftAddress][tokenId].price == 0) revert NotListed(nftAddress, tokenId);
@@ -95,9 +92,20 @@ contract NFTMarketplace is ReentrancyGuard {
      * @notice Sets the initial owner and fee percentage for the marketplace.
      * @param _feePercentage The initial fee percentage for sales.
      */
-    constructor(uint256 _feePercentage) {
-        owner = msg.sender;
+    constructor(uint256 _feePercentage, address _feeManager) {
         feePercentage = _feePercentage;
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(FEE_MANAGER_ROLE, _feeManager);
+        _grantRole(PAUSER_ROLE, msg.sender);
+        _grantRole(WITHDRAWER_ROLE, msg.sender);
+    }
+
+    function pause() external onlyRole(PAUSER_ROLE) {
+        _pause();
+    }
+
+    function unpause() external onlyRole(PAUSER_ROLE) {
+        _unpause();
     }
 
     /**
@@ -111,7 +119,7 @@ contract NFTMarketplace is ReentrancyGuard {
         address nftAddress,
         uint256 tokenId,
         uint256 price
-    ) external isNotListed(nftAddress, tokenId) {
+    ) external isNotListed(nftAddress, tokenId) whenNotPaused {
         if (price == 0) revert PriceMustBeGreaterThanZero();
         IERC721 nft = IERC721(nftAddress);
         if (nft.ownerOf(tokenId) != msg.sender) revert NotNFTOwner(msg.sender, nftAddress, tokenId);
@@ -135,7 +143,7 @@ contract NFTMarketplace is ReentrancyGuard {
     function purchase(
         address nftAddress,
         uint256 tokenId
-    ) external payable isListed(nftAddress, tokenId) nonReentrant {
+    ) external payable isListed(nftAddress, tokenId) nonReentrant whenNotPaused {
         Listing storage listing = listings[nftAddress][tokenId];
         uint256 price = listing.price;
 
@@ -144,7 +152,9 @@ contract NFTMarketplace is ReentrancyGuard {
         uint256 fee = (price * feePercentage) / 100;
         uint256 sellerProceeds = price - fee;
 
-        marketplaceFees[owner] += fee;
+        if (fee > 0) {
+            marketplaceFees[address(this)] += fee;
+        }
 
         address seller = listing.seller;
         delete listings[nftAddress][tokenId];
@@ -172,7 +182,7 @@ contract NFTMarketplace is ReentrancyGuard {
     function cancel(
         address nftAddress,
         uint256 tokenId
-    ) external isListed(nftAddress, tokenId) {
+    ) external isListed(nftAddress, tokenId) whenNotPaused {
         if (listings[nftAddress][tokenId].seller != msg.sender) revert NotSeller(msg.sender, nftAddress, tokenId);
 
         delete listings[nftAddress][tokenId];
@@ -182,27 +192,27 @@ contract NFTMarketplace is ReentrancyGuard {
 
     /**
      * @notice Updates the marketplace fee percentage.
-     * @dev Only callable by the owner.
+     * @dev Only callable by accounts with the FEE_MANAGER_ROLE.
      * @param _feePercentage The new fee percentage.
      */
-    function updateFee(uint256 _feePercentage) external onlyOwner {
+    function updateFee(uint256 _feePercentage) external onlyRole(FEE_MANAGER_ROLE) {
         feePercentage = _feePercentage;
         emit FeeUpdated(_feePercentage);
     }
 
     /**
-     * @notice Allows the owner to withdraw accumulated fees.
-     * @dev Only callable by the owner when there are fees to withdraw.
+     * @notice Allows a fee manager to withdraw accumulated fees.
+     * @dev Only callable by accounts with the WITHDRAWER_ROLE.
      */
-    function withdrawFees() external onlyOwner {
-        uint256 balance = marketplaceFees[owner];
+    function withdrawFees() external onlyRole(WITHDRAWER_ROLE) {
+        uint256 balance = marketplaceFees[address(this)];
         if (balance == 0) revert NoFeesToWithdraw();
 
-        marketplaceFees[owner] = 0;
+        marketplaceFees[address(this)] = 0;
 
-        (bool success, ) = owner.call{value: balance}("");
+        (bool success, ) = msg.sender.call{value: balance}("");
         if (!success) revert TransferFailed();
 
-        emit FeeWithdrawn(owner, balance);
+        emit FeeWithdrawn(msg.sender, balance);
     }
 } 
