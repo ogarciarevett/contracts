@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -193,18 +193,18 @@ contract NFTMarketplace is ReentrancyGuard, AccessControl, Pausable {
     /**
      * @notice Updates the marketplace fee percentage.
      * @dev Only callable by accounts with the FEE_MANAGER_ROLE.
-     * @param _feePercentage The new fee percentage.
+     * @param feePercentage_ The new fee percentage.
      */
-    function updateFee(uint256 _feePercentage) external onlyRole(FEE_MANAGER_ROLE) {
-        feePercentage = _feePercentage;
-        emit FeeUpdated(_feePercentage);
+    function updateFee(uint256 feePercentage_) external onlyRole(FEE_MANAGER_ROLE) {
+        feePercentage = feePercentage_;
+        emit FeeUpdated(feePercentage_);
     }
 
     /**
      * @notice Allows a fee manager to withdraw accumulated fees.
      * @dev Only callable by accounts with the WITHDRAWER_ROLE.
      */
-    function withdrawFees() external onlyRole(WITHDRAWER_ROLE) {
+    function withdrawFees() external onlyRole(WITHDRAWER_ROLE) nonReentrant {
         uint256 balance = marketplaceFees[address(this)];
         if (balance == 0) revert NoFeesToWithdraw();
 

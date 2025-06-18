@@ -40,5 +40,14 @@ jobs:
             - name: Install dependencies
               run: pnpm install
 
+            - name: Run Linter
+              run: pnpm run lint
+
+            - name: Run Solhint
+              run: pnpm run solhint
+
+            - name: Run Slither
+              run: pnpm run analysis
+
             - name: Run Hardhat tests
               run: pnpm test:ci
