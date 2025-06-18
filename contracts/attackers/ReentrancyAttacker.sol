@@ -14,11 +14,11 @@ contract ReentrancyAttacker is IERC721Receiver {
         _marketplace = NFTMarketplace(_marketplaceAddress);
     }
     
-    function listNFT(address _nftAddress, uint256 _tokenId, uint256 _price) external {
-        IERC721(_nftAddress).approve(address(_marketplace), _tokenId);
-        _marketplace.list(_nftAddress, _tokenId, _price);
-        _nftAddress = _nftAddress;
-        _tokenId = _tokenId;
+    function listNFT(address nft, uint256 id, uint256 price) external {
+        IERC721(nft).approve(address(_marketplace), id);
+        _marketplace.list(nft, id, price);
+        _nftAddress = nft;
+        _tokenId = id;
     }
     
     function _attack(uint256 _price) internal {
