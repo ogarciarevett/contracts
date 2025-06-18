@@ -149,3 +149,9 @@ node_modules
 # solidity-coverage files
 /coverage
 /coverage.json
+
+# echidna files
+echidna-corpus/
+crytic-export/
+
+.DS_Store

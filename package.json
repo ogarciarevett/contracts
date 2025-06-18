@@ -9,6 +9,7 @@
         "deploy:sei:mainnet": "pnpm compile && hardhat deploy --network sei",
         "deploy:sei:testnet": "pnpm compile && hardhat deploy --network seitestnet",
         "analysis": "slither contracts --exclude-dependencies --exclude-informational --exclude-low --exclude-medium --exclude-high",
+        "fuzzing": "./run-fuzz.sh",
         "test": "REPORT_GAS=true hardhat test test/*.ts --network hardhat",
         "test:ci": "hardhat test test/*.ts  --network hardhat",
         "lint": "eslint . --fix",

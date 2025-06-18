@@ -1,0 +1,8 @@
+# Echidna configuration for fuzzing tests
+testLimit: 50000
+coverage: true
+corpusDir: "echidna-corpus"
+testMode: "assertion"
+shrinkLimit: 5000
+seqLen: 100
+timeout: 300

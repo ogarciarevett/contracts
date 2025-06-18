@@ -81,3 +81,36 @@ First, you need to have the solidity compiler installed with the specific versio
 Second, you need to install locally [slither](https://github.com/crytic/slither). There's a few ways to do it, but for simplicity I'll use brew.
 
 `brew install slither`
+
+## Fuzzing
+
+This project uses [Echidna](https://github.com/crytic/echidna) for fuzz testing.
+
+### Installation
+
+To run fuzz tests locally, you need to install Echidna.
+
+**MacOS:**
+```bash
+brew tap crytic/crytic
+brew install echidna
+```
+
+**Linux:**
+```bash
+wget https://github.com/crytic/echidna/releases/download/v2.2.0/echidna-v2.2.0-ubuntu-20.04.tar.gz
+tar -xzf echidna-v2.2.0-ubuntu-20.04.tar.gz
+sudo mv echidna /usr/local/bin/
+```
+
+### Usage
+
+To run the fuzz tests, execute the following command:
+
+```bash
+pnpm run fuzzing
+```
+
+Echidna will then analyze the contracts specified in `echidna.config.yml` and try to falsify the properties defined in the test files under `test/fuzz/`.
+
+![Fuzzing output example](./docs/fuzzing.png)
