@@ -6,27 +6,27 @@ import "../NFTMarketplace.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract ReentrancyAttacker is IERC721Receiver {
-    NFTMarketplace private immutable marketplace;
-    address private nftAddress;
-    uint256 private tokenId;
+    NFTMarketplace private immutable _marketplace;
+    address private _nftAddress;
+    uint256 private _tokenId;
 
     constructor(address _marketplaceAddress) {
-        marketplace = NFTMarketplace(_marketplaceAddress);
+        _marketplace = NFTMarketplace(_marketplaceAddress);
     }
     
     function listNFT(address _nftAddress, uint256 _tokenId, uint256 _price) external {
-        IERC721(_nftAddress).approve(address(marketplace), _tokenId);
-        marketplace.list(_nftAddress, _tokenId, _price);
-        nftAddress = _nftAddress;
-        tokenId = _tokenId;
+        IERC721(_nftAddress).approve(address(_marketplace), _tokenId);
+        _marketplace.list(_nftAddress, _tokenId, _price);
+        _nftAddress = _nftAddress;
+        _tokenId = _tokenId;
     }
     
-    function attack(uint256 _price) internal {
-        marketplace.purchase{value: _price}(nftAddress, tokenId);
+    function _attack(uint256 _price) internal {
+        _marketplace.purchase{value: _price}(_nftAddress, _tokenId);
     }
 
     function startAttack(uint256 _price) external payable {
-        attack(_price);
+        _attack(_price);
     }
 
     function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
@@ -34,6 +34,6 @@ contract ReentrancyAttacker is IERC721Receiver {
     }
 
     receive() external payable {
-        attack(msg.value);
+        _attack(msg.value);
     }
 } 
