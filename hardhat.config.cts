@@ -1,7 +1,7 @@
 import type { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox-viem';
 import '@nomicfoundation/hardhat-viem';
-import { ChainId, NetworkName, rpcUrls } from './constants/networks';
+import { ChainId, ExplorerApiBaseUrl, NetworkName, rpcUrls } from './constants/networks';
 import 'dotenv/config';
 
 const { PRIVATE_KEY } = process.env;
@@ -40,6 +40,30 @@ const config: HardhatUserConfig = {
     },
     sourcify: {
         enabled: true,
+    },
+    etherscan: {
+        apiKey: {
+            [NetworkName.SeiTestnet]: 'ANY_STRING',
+            [NetworkName.Sei]: 'ANY_STRING',
+        },
+        customChains: [
+            {
+                network: NetworkName.SeiTestnet,
+                chainId: ChainId.SeiTestnet,
+                urls: {
+                    apiURL: `${ExplorerApiBaseUrl.SeiTestnet}/api`,
+                    browserURL: ExplorerApiBaseUrl.SeiTestnet,
+                },
+            },
+            {
+                network: NetworkName.Sei,
+                chainId: ChainId.Sei,
+                urls: {
+                    apiURL: `${ExplorerApiBaseUrl.Sei}/api`,
+                    browserURL: ExplorerApiBaseUrl.Sei,
+                },
+            },
+        ],
     },
 };
 

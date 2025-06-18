@@ -4,6 +4,8 @@
     "description": "Custom audit attacks and test smart contracts - evm",
     "main": "index.js",
     "scripts": {
+        "deploy:ignition:sei:testnet": "pnpm compile && pnpm hardhat ignition deploy ignition/modules/NFTMarketplace.ts --network seitestnet",
+        "deploy:ignition:sei:mainnet": "pnpm compile && pnpm hardhat ignition deploy ignition/modules/NFTMarketplace.ts --network sei",
         "deploy:sei:mainnet": "pnpm compile && hardhat deploy --network sei",
         "deploy:sei:testnet": "pnpm compile && hardhat deploy --network seitestnet",
         "test": "REPORT_GAS=true hardhat test test/*.ts --network hardhat",

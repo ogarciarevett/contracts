@@ -17,6 +17,11 @@ export enum ChainId {
     Hardhat = 31337,
 }
 
+export enum ExplorerApiBaseUrl {
+    Sei = 'https://seitrace.com/pacific-1',
+    SeiTestnet = 'https://seitrace.com/atlantic-2',
+}
+
 export enum NetworkName {
     Localhost = 'localhost',
     Ethereum = 'mainnet',
@@ -39,8 +44,8 @@ export enum NetworkExplorer {
     Localhost = 'http://localhost:8545',
     Ethereum = 'https://etherscan.io',
     Sepolia = 'https://sepolia.etherscan.io',
-    Sei = 'https://seiscan.app',
-    SeiTestnet = 'https://seiscan.app',
+    Sei = 'https://seistream.app',
+    SeiTestnet = 'https://testnet.seistream.app',
     Hardhat = 'https://etherscan.io',
 }
 
@@ -55,7 +60,7 @@ export function getTransactionUrl(txHash: string, network: NetworkName): string 
 export const rpcUrls = {
     [ChainId.Ethereum]: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
     [ChainId.Sepolia]: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`,
-    [ChainId.Sei]: 'https://sei-rpc.publicnode.com',
-    [ChainId.SeiTestnet]: 'https://sei-testnet-rpc.publicnode.com',
+    [ChainId.Sei]: 'https://evm-rpc.sei-apis.com',
+    [ChainId.SeiTestnet]: 'https://evm-rpc-testnet.sei-apis.com',
     [ChainId.Hardhat]: 'http://localhost:8545',
 };
