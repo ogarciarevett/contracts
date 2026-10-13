@@ -1,4 +1,20 @@
-# EVM Smart Contracts
+<div align="center">
+
+<img src="assets/contracts.svg" width="180" alt="contracts: a shield protecting a collectible token">
+
+# contracts
+
+**An ERC721 marketplace with security tests and fuzzing harnesses.**
+
+[![license: MIT](https://img.shields.io/badge/license-MIT-22a06b)](LICENSE)
+[![Solidity: 0.8.28](https://img.shields.io/badge/Solidity-0.8.28-5865a8)](contracts/NFTMarketplace.sol)
+[![CI: workflow](https://img.shields.io/badge/CI-workflow-287ec1)](.github/workflows/CI.yml)
+
+Works with **Hardhat** · **OpenZeppelin** · **Echidna**
+
+</div>
+
+---
 
 This repository contains a collection of custom smart contracts for the Ethereum Virtual Machine (EVM), primarily focused on security analysis and testing. It includes an NFT Marketplace and various attacker contracts.
 
