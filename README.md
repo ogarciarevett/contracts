@@ -7,7 +7,7 @@
 **An ERC721 marketplace with security tests and fuzzing harnesses.**
 
 [![license: MIT](https://img.shields.io/badge/license-MIT-22a06b)](LICENSE)
-[![Solidity: 0.8.28](https://img.shields.io/badge/Solidity-0.8.28-5865a8)](contracts/NFTMarketplace.sol)
+[![Solidity: 0.8.28](https://img.shields.io/badge/Solidity-0.8.28-5865a8)](hardhat.config.ts#L16)
 [![CI: workflow](https://img.shields.io/badge/CI-workflow-287ec1)](.github/workflows/CI.yml)
 
 Works with **Hardhat** · **OpenZeppelin** · **Echidna**
