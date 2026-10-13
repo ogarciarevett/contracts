@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-labelledby="title"><title id="title">a shield protecting a collectible token</title>
+<path d="M90 17 151 40V89C151 124 124 148 90 165 56 148 29 124 29 89V40Z" fill="#18283b" stroke="#8fa9f4" stroke-width="7" stroke-linejoin="round"/>
+<rect x="59" y="49" width="62" height="80" rx="10" fill="#8fa9f4"/>
+<path d="m90 61 18 20-18 21-18-21Z" fill="#18283b"/>
+<path d="m76 116 9 9 20-21" fill="none" stroke="#18283b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="143" cy="136" r="19" fill="#f4ba60"/>
+<path d="M135 136H151M143 128V144" stroke="#18283b" stroke-width="5" stroke-linecap="round"/>
+</svg>
