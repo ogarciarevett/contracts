@@ -1,0 +1,49 @@
+name: Toolchain timing
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: "2f6a8cddfd2e69722d80610b5bb9e175fecd7665"
+          path: before
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: after
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.22.1"
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: "10.11.0"
+      - name: Use a synthetic, unfunded local-test key
+        run: echo "PRIVATE_KEY=$(node -e 'console.log("0x" + "11".repeat(32))')" >> "$GITHUB_ENV"
+      - name: Compare both checkouts on this runner (install excluded)
+        shell: bash
+        run: |
+          failure=0
+          for phase in before after; do
+            cd "$GITHUB_WORKSPACE/$phase"
+            pnpm install --frozen-lockfile
+            if /usr/bin/time -f "$phase build %e seconds" -o "$RUNNER_TEMP/$phase-build.txt" pnpm compile; then
+              cat "$RUNNER_TEMP/$phase-build.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+            else
+              cat "$RUNNER_TEMP/$phase-build.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+              failure=1
+            fi
+            if /usr/bin/time -f "$phase typecheck %e seconds" -o "$RUNNER_TEMP/$phase-typecheck.txt" pnpm exec tsc --noEmit; then
+              cat "$RUNNER_TEMP/$phase-typecheck.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+            else
+              cat "$RUNNER_TEMP/$phase-typecheck.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+              failure=1
+            fi
+          done
+          exit "$failure"
