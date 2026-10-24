@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "rootDir": ".",
+        "types": ["node", "mocha", "chai-as-promised"],
         "target": "es2020",
         "module": "Node16",
         "moduleResolution": "Node16",

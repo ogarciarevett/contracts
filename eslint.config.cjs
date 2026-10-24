@@ -28,7 +28,7 @@ module.exports = [
                 ecmaFeatures: {
                     jsx: false,
                 },
-                tsconfigRootDir: '.',
+                tsconfigRootDir: __dirname,
                 project: ['./tsconfig.json'],
                 projectFolderIgnoreList: ['node_modules', 'dist', 'build', '.yarn', 'build-utils'],
                 extraFileExtensions: ['.sol'],
